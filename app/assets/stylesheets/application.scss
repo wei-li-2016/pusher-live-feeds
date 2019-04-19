@@ -1,0 +1,24 @@
+@import "bootstrap";
+@import url("https://fonts.googleapis.com/css?family=Tajawal");
+
+body {
+  font-family: "Tajawal", sans-serif;
+}
+
+#post {
+  min-height: 5rem;
+  max-height: 8rem;
+}
+
+.card-header {
+  padding: 0.25rem 0.85rem;
+  font-weight: 700;
+}
+
+.card-body {
+  padding: 0.55rem 0.85rem;
+}
+
+.far {
+  cursor: pointer;
+}

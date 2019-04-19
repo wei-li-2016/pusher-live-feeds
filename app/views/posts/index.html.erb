@@ -1,2 +1,38 @@
-<h1>Posts#index</h1>
-<p>Find me in app/views/posts/index.html.erb</p>
+<div class="container-fluid">
+  <div class="container">
+    <div class="container bg-light p-3 col-8 col-lg-6 welcome-page">
+      <h5 class="text-center">Enter your username</h5>
+      <input type="text" id="new-user-form" class="form-control my-5" required />
+    </div>
+    <div class="container bg-light p-3 col-8 col-lg-6 post-page collapse">
+      <div class="post-form-wrapper">
+        <p class="current-user"></p>
+        <%= form_with(model: @post, scope: :post, format: :json, id: 'post-form') do |form| %>
+          <div class="field">
+            <%= form.text_area :post, id: :post, class: "form-control post-textarea", required: true %>
+            <%= form.hidden_field :username, id: :username %>
+          </div>
+          <div class="actions text-right">
+            <%= form.submit 'Submit post', class: "btn btn-success btn-sm mt-1" %>
+          </div>
+        <% end %>
+      </div>
+      <div class="posts mt-5">
+        <% @posts.each do |post| %>
+          <div class="post-wrapper col-12 mb-2 p-0">
+            <div class="card">
+              <div class="card-header">
+                @<%= post.username %>
+                <small class="float-right mt-1"><%= post.created_at.strftime("at %I:%M%p") %></small>
+              </div>
+              <div class="card-body">
+                <p class="card-text"><%= post.post %></p>
+                <%= link_to '', add_likes_path(post_id: post.id), remote: true, method: :post, class: "far fa-thumbs-up add-like" %><span class="ml-2" data-post="<%= post.id %>"><%= post.likes[0].like_count %></span>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
