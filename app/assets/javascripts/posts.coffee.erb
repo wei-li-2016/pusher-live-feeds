@@ -1,14 +1,10 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
-
 $(document).ready =>
   currentUser = ''
   welcomePage = $('.welcome-page')
   postPage = $('.post-page')
   newUserForm = $('#new-user-form')
 
-  # when user enters a username, store it and show the post page
+  <%# when user enters a username, store it and show the post page %>
   newUserForm.on 'keyup', (event) ->
     if event.keyCode == 13 and !event.shiftKey
       currentUser = event.target.value
@@ -20,7 +16,7 @@ $(document).ready =>
       $('#username').val(currentUser)
     return
 
-  # function for adding new posts to the feed
+  <%# function for adding new posts to the feed %>
   updateFeed = (post) ->
     postTime = new Date(post.created_at.replace(' ', 'T')).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
     $('.posts').prepend """
@@ -37,9 +33,22 @@ $(document).ready =>
     """
     return
 
-  # if the post was successfully saved, get the post and pass it to the updateFeed function
+  <%# if the post was successfully saved, get the post and pass it to the updateFeed function %>
   $('#post-form').on 'ajax:success', (data) ->
     post = data.detail[0]
-    updateFeed post
     $('#post-form')[0].reset()
     return
+
+  <%# suscribe our Pusher client to the feed channel. Whenever there is a new post or new like, update the view with it %>
+  pusher = new Pusher('<%= ENV["PUSHER_KEY"] %>',
+    cluster: '<%= ENV["PUSHER_CLUSTER"] %>'
+    encrypted: true)
+  channel = pusher.subscribe('feed')
+  channel.bind 'new-post', (data) ->
+    updateFeed data
+  channel.bind 'new-like', (data) ->
+    <%# whenever there is a new like, find the liked post via it's "data-post" attribute then update its likes count %>
+    currentPost = $ 'span[data-post=\'' + data.id + '\']'
+    currentPost.text(data.likes[0].like_count)
+    return
+  return 
